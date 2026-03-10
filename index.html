@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultancy Daily Timesheet</title>
+    <!-- Add Google Fonts: Inter and Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+    <!-- Add Phosphor Icons for beautiful icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: rgba(30, 41, 59, 0.7);
+            --surface-border: rgba(255, 255, 255, 0.1);
+            --primary-accent: #3b82f6;
+            --primary-accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --glow-color: rgba(59, 130, 246, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+            position: relative;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--surface-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--surface-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .header-left h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.25rem;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-left p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            background: var(--input-bg);
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 4px var(--glow-color);
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.6;
+            cursor: pointer;
+        }
+
+        .timesheet-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .time-row {
+            display: grid;
+            grid-template-columns: 100px 3fr 2fr 1fr;
+            gap: 1rem;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 16px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .time-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--surface-border);
+            transform: translateX(4px);
+        }
+
+        .time-label {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .time-label i {
+            color: var(--primary-accent);
+        }
+
+        input.task-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--surface-border);
+            border-radius: 0;
+            padding: 0.5rem 0;
+            padding-left: 0.5rem;
+        }
+
+        input.task-input:focus {
+            box-shadow: none;
+            border-color: var(--primary-accent);
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px 8px 0 0;
+        }
+
+        select {
+            background: var(--input-bg);
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1em;
+            cursor: pointer;
+        }
+
+        select option {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.4rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .status-billable {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .status-nonbillable {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .status-internal {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--surface-border);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-accent), #6366f1);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--surface-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-block {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .summary-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .summary-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .meta-info {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .time-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .time-row>* {
+                margin-bottom: 0.5rem;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .summary-block {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>Daily Timesheet</h1>
+                <p>Log your working hours and task details.</p>
+            </div>
+            <div class="meta-info">
+                <div class="input-group">
+                    <label>Date</label>
+                    <input type="date" id="dateInput">
+                </div>
+                <div class="input-group">
+                    <label> Name</label>
+                    <input type="text" placeholder="e.g. Jane Doe">
+                </div>
+            </div>
+        </header>
+
+        <div class="timesheet-grid" id="timesheetGrid">
+            <!-- Rows will be injected by JS -->
+        </div>
+
+        <div class="actions">
+            <div class="summary-block">
+                <div class="summary-item">
+                    <span class="summary-label">Total Hours</span>
+                    <span class="summary-value" id="totalHours">8h</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Billable</span>
+                    <span class="summary-value" id="billableHours" style="color: #34d399;">0h</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-secondary" onclick="exportCSV()">
+                    <i class="ph ph-download-simple"></i>
+                    Export CSV
+                </button>
+                <button class="btn btn-primary" onclick="submitSheet()">
+                    <i class="ph ph-paper-plane-tilt"></i>
+                    Submit Log
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date
+        document.getElementById('dateInput').valueAsDate = new Date();
+
+        const hours = [
+            "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM",
+            "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM"
+        ];
+
+        const projects = [
+            "Project Alpha", "Project Beta", "Internal Meeting", "Client Call", "Research & Dev", "Admin"
+        ];
+
+        const typeOptions = [
+            { value: "billable", label: "Billable", class: "status-billable" },
+            { value: "nonbillable", label: "Non-Billable", class: "status-nonbillable" },
+            { value: "internal", label: "Internal", class: "status-internal" }
+        ];
+
+        const grid = document.getElementById('timesheetGrid');
+
+        function createTypeSelect(rowId) {
+            let select = document.createElement('select');
+            select.className = 'status-badge status-billable';
+            select.id = `type-${rowId}`;
+            select.onchange = function () {
+                // Update class based on specific options
+                this.className = 'status-badge status-' + this.value;
+                calculateTotals();
+            };
+
+            typeOptions.forEach(opt => {
+                let option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                select.appendChild(option);
+            });
+
+            return select;
+        }
+
+        hours.forEach((time, index) => {
+            const row = document.createElement('div');
+            row.className = 'time-row';
+
+            const label = document.createElement('div');
+            label.className = 'time-label';
+            label.innerHTML = `<i class="ph ph-clock"></i> ${time.split(' ')[0]} <span style="font-size:0.7em; color:var(--text-secondary)">${time.split(' ')[1]}</span>`;
+
+            const taskInput = document.createElement('input');
+            taskInput.type = 'text';
+            taskInput.className = 'task-input';
+            taskInput.placeholder = 'What did you work on?';
+            taskInput.id = `task-${index}`;
+
+            const projectSelect = document.createElement('select');
+            projectSelect.id = `project-${index}`;
+            projectSelect.innerHTML = `<option value="">Select Project</option>` + projects.map(p => `<option value="${p}">${p}</option>`).join('');
+
+            row.appendChild(label);
+            row.appendChild(taskInput);
+            row.appendChild(projectSelect);
+            row.appendChild(createTypeSelect(index));
+
+            grid.appendChild(row);
+        });
+
+        function calculateTotals() {
+            let billableCount = 0;
+            let totalCount = 0;
+
+            hours.forEach((_, index) => {
+                const taskVal = document.getElementById(`task-${index}`).value;
+                const typeVal = document.getElementById(`type-${index}`).value;
+
+                if (taskVal.trim() !== "") {
+                    totalCount += 1;
+                    if (typeVal === "billable") {
+                        billableCount += 1;
+                    }
+                }
+            });
+
+            document.getElementById('totalHours').innerText = `${totalCount}h`;
+            document.getElementById('billableHours').innerText = `${billableCount}h`;
+        }
+
+        // Add event listeners to input fields to trigger recalculations
+        grid.addEventListener('input', (e) => {
+            if (e.target.classList.contains('task-input')) {
+                calculateTotals();
+            }
+        });
+
+        function exportCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            let date = document.getElementById('dateInput').value;
+            let name = document.querySelector('input[placeholder="e.g. Jane Doe"]').value || "Unknown";
+
+            csvContent += `Date,${date}\n`;
+            csvContent += `Consultant,${name}\n\n`;
+            csvContent += "Time,Task Description,Project,Type\n";
+
+            hours.forEach((time, index) => {
+                const task = document.getElementById(`task-${index}`).value;
+                const project = document.getElementById(`project-${index}`).value;
+                const type = document.getElementById(`type-${index}`).options[document.getElementById(`type-${index}`).selectedIndex].text;
+
+                csvContent += `"${time}","${task}","${project}","${type}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Timesheet_${date}_${name.replace(/\s+/g, '_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function submitSheet() {
+            const btn = document.querySelector('.btn-primary');
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting...';
+            btn.style.opacity = '0.7';
+
+            // 1. Gather all the data
+            let date = document.getElementById('dateInput').value;
+            let name = document.querySelector('input[placeholder="e.g. Jane Doe"]').value || "Unknown";
+
+            let reportData = `Timesheet Date: ${date}\nConsultant: ${name}\n\n`;
+            let totalBillable = 0;
+            let totalHours = 0;
+
+            hours.forEach((time, index) => {
+                const task = document.getElementById(`task-${index}`).value;
+                if (task.trim() !== "") {
+                    const project = document.getElementById(`project-${index}`).value || "No Project";
+                    const typeSelect = document.getElementById(`type-${index}`);
+                    const type = typeSelect.options[typeSelect.selectedIndex].text;
+
+                    reportData += `[${time}] ${project} - ${type}: ${task}\n`;
+                    totalHours++;
+                    if (typeSelect.value === 'billable') totalBillable++;
+                }
+            });
+
+            reportData += `\nTotal Hours: ${totalHours}h\nBillable Hours: ${totalBillable}h`;
+
+            if (totalHours === 0) {
+                alert("Please enter at least one task before submitting.");
+                btn.innerHTML = originalText;
+                btn.style.opacity = '1';
+                return;
+            }
+
+            // 2. Submit to Google Forms Invisible Backend
+            // --- Manager Setup Required Here ---
+            const googleFormActionURL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe2YLeW00yCaUPK6jKR04AuvAs9SI2bSme4q9BLiHX_lRza0A/formResponse";
+            const formEntryID = "entry.132384673"; // e.g. entry.123456789
+
+            // Create a hidden iframe to prevent form redirecting away from the page
+            const iframe = document.createElement("iframe");
+            iframe.name = "hidden_iframe";
+            iframe.id = "hidden_iframe";
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+
+            // Create the form
+            const form = document.createElement("form");
+            form.action = googleFormActionURL;
+            form.method = "POST";
+            form.target = "hidden_iframe";
+
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = formEntryID;
+            input.value = reportData;
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+            form.submit();
+
+            // 3. Update UI Success state
+            setTimeout(() => {
+                btn.innerHTML = '<i class="ph ph-check-circle"></i> Log Submitted!';
+                btn.style.background = 'linear-gradient(to right, #10b981, #059669)';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.style.opacity = '1';
+                    // Reset fields
+                    document.querySelectorAll('.task-input').forEach(input => input.value = '');
+                    document.querySelectorAll('select').forEach((sel, i) => {
+                        if (sel.id.startsWith('project')) sel.selectedIndex = 0;
+                    });
+                    calculateTotals();
+
+                    // Cleanup DOM
+                    document.body.removeChild(form);
+                    document.body.removeChild(iframe);
+                }, 3000);
+            }, 1500);
+        }
+
+        // Initial calculation
+        calculateTotals();
+    </script>
+
+</body>
+
+</html>
